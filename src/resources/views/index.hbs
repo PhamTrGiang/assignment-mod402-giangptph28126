@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <title>Manager</title>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="page-top row">
+            <h2 class="col-md-10">Users</h2>
+            <div class="col-md-2">
+                <button class="btn-add">Add</button>
+            </div>
+        </div>
+        <div class="list">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Imager</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each list}}
+                    <tr>
+                        <td>{{this.id}}</td>
+                        <td><img src="imager/background.jpg" alt="avatar" height="25px" width="25px"></td>
+                        <td>{{this.fullname}}</td>
+                        <td>{{this.email}}</td>
+                        <td>{{this.password}}</td>
+                        <td>
+                            <button class="btn-item"><i class="glyphicon glyphicon-trash"></i></button>
+                            <button class="btn-item"><i class="glyphicon glyphicon-pencil"></i></button>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
