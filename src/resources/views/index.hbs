@@ -14,12 +14,14 @@
 
 <body>
     <div class="container-fluid">
+        {{#if admin}}
         <div class="page-top row">
             <h2 class="col-md-10">Users</h2>
             <div class="col-md-2">
                 <a class="btn-add btn" href="/user/add">Add</a>
             </div>
         </div>
+        
         <div class="list">
             <table class="table">
                 <thead>
@@ -60,6 +62,12 @@
             </table>
 
         </div>
+        {{else}}
+        <div>
+            <h1>Bạn không có quyền truy cập</h1>
+        </div>
+        {{/if}}
+
 
     </div>
 

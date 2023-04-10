@@ -14,6 +14,8 @@ const productModel = require("./model/productModel");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+var isAdmin;
+var userId;
 
 const storageEngine = multer.diskStorage({
   destination: "./images",
@@ -56,7 +58,18 @@ app.set("view engine", "hbs");
 app.set("views", "./views");
 app.set("views", path.join(__dirname, "views"));
 
+app.get("/info", async (req, res) => {
+  await mongoose.connect(uri);
+  var account = await accountModel.findOne({ _id: userId }).lean();
+  res.render("info", { layout: "change" ,account:account});
+});
+app.post("/info", (req, res) => {
+  res.redirect("/info");
+});
+
 app.get("/", (req, res) => {
+  isAdmin = false;
+  userId = "";
   res.render("login", { layout: "welcome" });
 });
 
@@ -81,7 +94,8 @@ app.post("/", async (req, res) => {
     error = "Email or password incorrect";
     return res.render("login", { layout: "welcome", error });
   }
-
+  isAdmin = arr[i].status;
+  userId = arr[i]._id;
   return res.redirect("/user");
 });
 
@@ -89,7 +103,7 @@ app.get("/register", (req, res) => {
   res.render("register", { layout: "welcome" });
 });
 
-app.post("/register",upload.single("image"), async (req, res) => {
+app.post("/register", upload.single("image"), async (req, res) => {
   await mongoose.connect(uri);
   var arr = await accountModel.find().lean();
   var fullname = req.body.fullname;
@@ -118,7 +132,9 @@ app.post("/register",upload.single("image"), async (req, res) => {
 app.get("/user", async (req, res) => {
   await mongoose.connect(uri);
   var arr = await accountModel.find().lean();
-  res.render("index", { arr: arr });
+  var account = await accountModel.findOne({ _id: userId }).lean();
+  console.log(account);
+  res.render("index", { arr: arr, admin: isAdmin, account: account });
 });
 
 app.get("/user/add", async (req, res) => {
@@ -128,11 +144,16 @@ app.get("/user/add", async (req, res) => {
 app.post("/user/add", upload.single("image"), async (req, res) => {
   await mongoose.connect(uri);
   var arr = await accountModel.find().lean();
-  var fullname = req.body.fullname;
+  var name = req.body.name;
   var email = req.body.email;
   var password = req.body.password;
   var error;
+
   var i = checkAccount(arr, email);
+  var status = false;
+  if (req.body.admin == "on") {
+    var status = true;
+  }
   if (!req.file) {
     error = "Please enter image";
     return res.render("addUser", {
@@ -149,11 +170,13 @@ app.post("/user/add", upload.single("image"), async (req, res) => {
       title: "Add",
     });
   }
+  console.log(req.body.admin);
   const newAccount = {
-    name: fullname,
+    name: name,
     email: email,
     password: password,
     image: req.file.path,
+    status: status,
   };
   await accountModel.insertMany(newAccount);
   return res.redirect("/user");
@@ -177,20 +200,32 @@ app.get("/user/update/:id", async (req, res) => {
 
 app.post("/user/update/:id", upload.single("image"), async (req, res) => {
   await mongoose.connect(uri);
+  var status = false;
+  if (req.body.admin == "on") {
+    var status = true;
+  }
+  const newAccount = {
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    status: status,
+  };
   if (req.file) {
     var arr = await accountModel.updateOne(
       { _id: req.params.id },
       { image: req.file.path }
     );
   }
-  var arr = await accountModel.updateOne({ _id: req.params.id }, req.body);
+  var arr = await accountModel.updateOne({ _id: req.params.id }, newAccount);
+
   return res.redirect("/user");
 });
 
 app.get("/product", async (req, res) => {
   await mongoose.connect(uri);
   var arr = await productModel.find().lean();
-  res.render("product", { arr: arr });
+  var account = await accountModel.findOne({ _id: userId }).lean();
+  res.render("product", { arr: arr, account: account });
 });
 
 app.get("/product/add", async (req, res) => {
@@ -207,14 +242,15 @@ app.post("/product/add", upload.single("image"), async (req, res) => {
       title: "Add",
     });
   }
+
   var newItem = {
     name: req.body.name,
-    price:req.body.price,
-    color:req.body.color,
-    type:req.body.type,
-    userId:req.body.userId,
-    userName:req.body.userName,
-    image : req.file.path,
+    price: req.body.price,
+    color: req.body.color,
+    type: req.body.type,
+    userId: req.body.userId,
+    userName: req.body.userName,
+    image: req.file.path,
   };
   await productModel.insertMany(newItem);
   res.redirect("/product");
@@ -244,7 +280,7 @@ app.post("/product/update/:id", upload.single("image"), async (req, res) => {
       { image: req.file.path }
     );
   }
-  await productModel.updateOne({ _id:req.params.id }, req.body);
+  await productModel.updateOne({ _id: req.params.id }, req.body);
   return res.redirect("/product");
 });
 

@@ -65,8 +65,14 @@
                     placeholder="Password" value="{{account.password}}" required>
             </div>
             <div class="checkbox">
-                <label><input type="checkbox" name="remember"> Remember me</label>
+                <label><input id="checkadmin" type="checkbox" name="admin">Admin</label>
             </div>
+            <script>
+                if({{account.status}}==true){
+                    document.getElementById("checkadmin").checked = true;
+                }
+            </script>
+            
             <button type="submit" class="btn">{{title}}</button>
         </form>
         <span style="color: red;">{{error}}</span>
