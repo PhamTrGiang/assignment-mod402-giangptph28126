@@ -18,14 +18,14 @@
         <div class="page-top row">
             <h2 class="col-md-10">Products</h2>
             <div class="col-md-2">
-                <button class="btn-add">Add</button>
+                <a class="btn-add btn" href="/product/add">Add</a>
             </div>
         </div>
         <div class="list">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Id</th>
+                        <th>Stt</th>
                         <th>Imager</th>
                         <th>Product Name</th>
                         <th>Price</th>
@@ -37,20 +37,31 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{#each arr}}
                     <tr>
-                        <td>1</td>
-                        <td><img src="imager/background.jpg" alt="avatar" height="25px" width="25px"></td>
-                        <td>Xe máy</td>
-                        <td>10000 k</td>
-                        <td>Đỏ</td>
-                        <td>Xe số</td>
-                        <td>1</td>
-                        <td>Phạm Trường Giang</td>
                         <td>
-                            <button class="btn-item"><i class="glyphicon glyphicon-trash"></i></button>
-                            <button class="btn-item"><i class="glyphicon glyphicon-pencil"></i></button>
+                            <span class="stt"></span>
+                            <script>
+                                var stt = {{@index}}+1;
+                                document.getElementsByClassName('stt')[{{ @index }}].innerHTML = stt;
+                            </script>
+                        </td>
+                        <td><img src={{this.image}} alt="avatar" height="25px" width="25px"></td>
+                        <td>{{this.name}}</td>
+                        <td>{{this.price}}</td>
+                        <td>{{this.color}}</td>
+                        <td>{{this.type}}</td>
+                        <td>{{this.userId}}</td>
+                        <td>{{this.userName}}</td>
+                        <td>
+                            <a class="btn-item btn" href="/product/delete/{{this._id}}"
+                                onclick="return confirm('Do you want to delete?')"><i
+                                    class="glyphicon glyphicon-trash"></i></a>
+                            <a class="btn-item btn" href="/product/update/{{this._id}}"><i
+                                    class="glyphicon glyphicon-pencil"></i></a>
                         </td>
                     </tr>
+                    {{/each}}
                 </tbody>
 
             </table>
